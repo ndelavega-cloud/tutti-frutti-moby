@@ -202,6 +202,7 @@
     .answer-row.unique { border-left: 2px solid var(--accent); }
     .answer-row.repeated { border-left: 2px solid var(--accent3); }
     .answer-row.empty { border-left: 2px solid var(--border); opacity: 0.5; }
+    .answer-row.invalid { border-left: 2px solid var(--danger); background: rgba(245,116,116,0.05); }
     .answer-pts {
       font-family: 'Syne', sans-serif;
       font-size: 13px;
@@ -626,7 +627,7 @@
 
     // Timer
     clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
+    timerInterval = setInterval(async () => {
       const left = Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
       const m = Math.floor(left / 60);
       const s = left % 60;
@@ -637,7 +638,20 @@
       }
       if (left <= 0) {
         clearInterval(timerInterval);
-        if (!finished) autoFinish();
+        const snap = await get(ref(db, "/"));
+        const freshData = snap.val() || {};
+        const freshGame = freshData.game || {};
+        if (freshGame.phase !== "results") {
+          const me = (freshData.players || {})[myId] || {};
+          if (!me.finished) await autoFinish();
+          setTimeout(async () => {
+            const snap2 = await get(ref(db, "/"));
+            const d2 = snap2.val() || {};
+            if ((d2.game || {}).phase !== "results") {
+              await computeAndShowResults(d2.game || {}, d2.players || {});
+            }
+          }, 1500);
+        }
       }
     }, 500);
 
@@ -653,8 +667,9 @@
     }
 
     // Check if all finished → go to results
-    const allFinished = Object.values(players).every(p => p.finished || p.status === "lobby");
-    if (allFinished && Object.keys(players).length > 0) {
+    const playerValues = Object.values(players);
+    const allFinished = playerValues.length > 0 && playerValues.every(p => p.finished);
+    if (allFinished) {
       clearInterval(timerInterval);
       computeAndShowResults(game, players);
     }
@@ -696,7 +711,9 @@
     const answers = {};
     CATEGORIES.forEach(cat => {
       const el = document.getElementById("ans-"+cat.id);
-      answers[cat.id] = el ? el.value.trim() : "";
+      const val = el ? el.value.trim() : "";
+      // Mínimo 3 caracteres para contar como respuesta válida
+      answers[cat.id] = val.length >= 3 ? val : "";
     });
     await saveAnswers(answers);
   };
@@ -705,15 +722,96 @@
     await update(ref(db, `players/${myId}`), { answers, finished: true });
   }
 
+  // ── AI VALIDATION ───────────────────────────────────────────────────────────
+  async function validateAnswersWithAI(letter, answersMap) {
+    // answersMap: { catId: [{ playerId, ans }] }
+    // Returns: { catId: { playerId: true/false } }
+    const items = [];
+    Object.entries(answersMap).forEach(([catId, list]) => {
+      list.forEach(({ playerId, ans }) => {
+        if (ans) items.push({ catId, playerId, ans });
+      });
+    });
+    if (items.length === 0) return {};
+
+    const catDescriptions = {
+      nombre: "nombre propio de persona (solo una palabra)",
+      objeto: "objeto tangible del mundo real (solo una palabra)",
+      pais: "país o ciudad geográficamente existente (solo una palabra)",
+      frase: "un verbo en infinitivo o conjugado (una sola palabra, para completar la frase 'se me hizo tarde porque...')",
+      personaje: "nombre de un personaje ficticio que alguien crearía (puede ser inventado, solo una palabra o nombre propio)",
+      comida: "comida o bebida real (solo una palabra)"
+    };
+
+    const prompt = `Sos un árbitro de Tutti Frutti. La letra de la ronda es "${letter.toUpperCase()}".
+Vas a validar respuestas. Para cada una decí si es VÁLIDA o INVÁLIDA según estas reglas:
+- Debe empezar con la letra "${letter.toUpperCase()}" (ignorá tildes, ej: la letra I acepta "Ignacio" e "Íngrid")
+- Debe corresponder a la categoría indicada
+- Debe ser una sola palabra (o nombre propio compuesto como "Nueva York" se acepta para País/Ciudad)
+- No puede ser spam, letras repetidas, palabras sin sentido o inventadas (excepto en "personaje que crearía")
+
+Respondé SOLO con JSON válido, sin texto extra, sin markdown:
+{"results": [{"id": "0", "valid": true}, {"id": "1", "valid": false}, ...]}
+
+Items a validar:
+${items.map((it, i) => `{"id": "${i}", "categoria": "${catDescriptions[it.catId] || it.catId}", "respuesta": "${it.ans}"}`).join('
+')}`;
+
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          messages: [{ role: "user", content: prompt }]
+        })
+      });
+      const data = await response.json();
+      const text = (data.content || []).map(c => c.text || "").join("").trim();
+      const clean = text.replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(clean);
+      const validMap = {};
+      parsed.results.forEach((r, i) => {
+        const it = items[parseInt(r.id)];
+        if (it) {
+          if (!validMap[it.catId]) validMap[it.catId] = {};
+          validMap[it.catId][it.playerId] = r.valid;
+        }
+      });
+      return validMap;
+    } catch (e) {
+      console.error("AI validation error:", e);
+      // Si falla la IA, todo válido (fallback)
+      const validMap = {};
+      items.forEach(it => {
+        if (!validMap[it.catId]) validMap[it.catId] = {};
+        validMap[it.catId][it.playerId] = true;
+      });
+      return validMap;
+    }
+  }
+
   // ── RESULTS ─────────────────────────────────────────────────────────────────
   async function computeAndShowResults(game, players) {
     const letter = (game.letter || "").toLowerCase();
     const playerList = Object.values(players);
 
-    // Calculate scores per category
-    const catScores = {}; // catId -> { playerId: { ans, pts } }
+    // Build answers map for AI validation
+    const answersMap = {};
     CATEGORIES.forEach(cat => {
-      const answers = {}; // answer -> [playerIds]
+      answersMap[cat.id] = playerList
+        .map(p => ({ playerId: p.id, ans: ((p.answers && p.answers[cat.id]) || "").trim() }))
+        .filter(x => x.ans);
+    });
+
+    // Run AI validation
+    const validMap = await validateAnswersWithAI(letter, answersMap);
+
+    // Calculate scores per category
+    const catScores = {};
+    CATEGORIES.forEach(cat => {
+      const answers = {};
       playerList.forEach(p => {
         const ans = ((p.answers && p.answers[cat.id]) || "").trim();
         const key = ans.toLowerCase();
@@ -725,27 +823,29 @@
       playerList.forEach(p => {
         const ans = ((p.answers && p.answers[cat.id]) || "").trim();
         if (!ans) {
-          catScores[cat.id][p.id] = { ans: "", pts: 0 };
+          catScores[cat.id][p.id] = { ans: "", pts: 0, invalid: false };
           return;
         }
         const startsOk = ans.toLowerCase().startsWith(letter);
-        if (!startsOk) {
-          catScores[cat.id][p.id] = { ans, pts: 0 };
+        const aiValid = (validMap[cat.id] && validMap[cat.id][p.id] !== undefined)
+          ? validMap[cat.id][p.id] : true;
+
+        if (!startsOk || !aiValid) {
+          catScores[cat.id][p.id] = { ans, pts: 0, invalid: true };
           return;
         }
         const key = ans.toLowerCase();
         const count = answers[key].length;
-        // Count total valid answers in this category
         const totalAnswered = Object.keys(answers).filter(k => k !== "").length;
         let pts;
         if (totalAnswered === 1) {
-          pts = 20; // único en completar la categoría
+          pts = 20;
         } else if (count === 1) {
-          pts = 10; // respuesta única (otros también completaron)
+          pts = 10;
         } else {
-          pts = 5;  // respuesta repetida
+          pts = 5;
         }
-        catScores[cat.id][p.id] = { ans, pts };
+        catScores[cat.id][p.id] = { ans, pts, invalid: false };
       });
     });
 
@@ -783,14 +883,16 @@
     const container = document.getElementById("results-categories");
     container.innerHTML = CATEGORIES.map(cat => {
       const rows = playerList.map(p => {
-        const info = (catScores[cat.id] && catScores[cat.id][p.id]) || { ans: "", pts: 0 };
-        const type = !info.ans ? "empty" : info.pts === 20 ? "unique" : info.pts === 10 ? "unique" : info.pts === 5 ? "repeated" : "empty";
-        const ptsClass = info.pts === 20 ? "pts-20" : info.pts === 10 ? "" : info.pts === 5 ? "pts-5" : "pts-0";
+        const info = (catScores[cat.id] && catScores[cat.id][p.id]) || { ans: "", pts: 0, invalid: false };
+        const isInvalid = info.invalid && info.ans;
+        const type = !info.ans ? "empty" : isInvalid ? "invalid" : info.pts === 20 ? "unique" : info.pts === 10 ? "unique" : info.pts === 5 ? "repeated" : "empty";
+        const ptsClass = isInvalid ? "pts-0" : info.pts === 20 ? "pts-20" : info.pts === 10 ? "" : info.pts === 5 ? "pts-5" : "pts-0";
         return `
           <div class="answer-row ${type}">
             <div>
               <span style="font-size:12px;color:var(--muted);margin-right:8px">${p.name}</span>
-              <span style="font-size:14px">${info.ans || '—'}</span>
+              <span style="font-size:14px;${isInvalid ? 'text-decoration:line-through;color:var(--danger)' : ''}">${info.ans || '—'}</span>
+              ${isInvalid ? '<span style="font-size:11px;color:var(--danger);margin-left:6px">❌ inválida</span>' : ''}
             </div>
             <span class="answer-pts ${ptsClass}">${info.pts > 0 ? '+'+info.pts : '0'}</span>
           </div>
