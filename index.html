@@ -743,19 +743,17 @@
       comida: "comida o bebida real (solo una palabra)"
     };
 
-    const prompt = `Sos un árbitro de Tutti Frutti. La letra de la ronda es "${letter.toUpperCase()}".
-Vas a validar respuestas. Para cada una decí si es VÁLIDA o INVÁLIDA según estas reglas:
-- Debe empezar con la letra "${letter.toUpperCase()}" (ignorá tildes, ej: la letra I acepta "Ignacio" e "Íngrid")
-- Debe corresponder a la categoría indicada
-- Debe ser una sola palabra (o nombre propio compuesto como "Nueva York" se acepta para País/Ciudad)
-- No puede ser spam, letras repetidas, palabras sin sentido o inventadas (excepto en "personaje que crearía")
-
-Respondé SOLO con JSON válido, sin texto extra, sin markdown:
-{"results": [{"id": "0", "valid": true}, {"id": "1", "valid": false}, ...]}
-
-Items a validar:
-${items.map((it, i) => `{"id": "${i}", "categoria": "${catDescriptions[it.catId] || it.catId}", "respuesta": "${it.ans}"}`).join('
-')}`;
+    const letra = letter.toUpperCase();
+    const itemsStr = items.map((it, i) => '{"id": "' + i + '", "categoria": "' + (catDescriptions[it.catId] || it.catId) + '", "respuesta": "' + it.ans.replace(/"/g, '') + '"}').join('\n');
+    const prompt = "Sos un arbitro de Tutti Frutti. La letra de la ronda es " + letra + ".\n" +
+      "Valida cada respuesta segun estas reglas:\n" +
+      "- Debe empezar con la letra " + letra + "\n" +
+      "- Debe corresponder a la categoria indicada\n" +
+      "- Debe ser una sola palabra (nombre propio compuesto como Nueva York se acepta para Pais/Ciudad)\n" +
+      "- No puede ser spam, letras repetidas o palabras sin sentido (excepto personaje que crearia que puede ser inventado)\n\n" +
+      "Responde SOLO con JSON valido, sin texto extra ni markdown:\n" +
+      '{"results": [{"id": "0", "valid": true}, {"id": "1", "valid": false}]}' + "\n\n" +
+      "Items a validar:\n" + itemsStr;
 
     try {
       const response = await fetch("https://api.anthropic.com/v1/messages", {
