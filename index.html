@@ -19,339 +19,116 @@
       --accent2: #00698C;
       --accent3: #4dd6f7;
       --danger: #f57474;
+      --success: #4df7a0;
       --radius: 14px;
       --radius-sm: 8px;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 16px; }
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    
-
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
     body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 60% 40% at 20% 10%, rgba(1,145,193,0.12) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 30% at 80% 80%, rgba(0,105,140,0.10) 0%, transparent 70%);
-      pointer-events: none;
-      z-index: 0;
+      content: ''; position: fixed; inset: 0;
+      background: radial-gradient(ellipse 60% 40% at 20% 10%, rgba(1,145,193,0.12) 0%, transparent 70%),
+                  radial-gradient(ellipse 40% 30% at 80% 80%, rgba(0,105,140,0.10) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
     }
-
-    .app { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
-
-    /* Header */
-    .header { text-align: center; padding: 2.5rem 0 2rem; }
+    .app { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+    .header { text-align: center; padding: 2rem 0 1.5rem; }
     .logo { font-family: 'Syne', sans-serif; font-size: 42px; font-weight: 800; letter-spacing: -2px; line-height: 1; }
     .logo span { color: var(--accent); }
-    .logo-sub { font-size: 13px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 6px; }
-
-    /* Cards */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-    }
-    .card-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
-
-    /* Inputs */
-    input[type="text"], input[type="number"] {
-      width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 12px 14px;
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      outline: none;
-      transition: border-color 0.15s;
+    .logo-sub { font-size: 12px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; }
+    .admin-crown { font-size: 11px; background: rgba(1,145,193,0.15); color: var(--accent-bright); border: 1px solid rgba(1,145,193,0.3); border-radius: 20px; padding: 2px 10px; display: inline-block; margin-top: 6px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem; }
+    .card-title { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+    input[type="text"], input[type="password"] {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px 14px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; transition: border-color 0.15s;
     }
     input:focus { border-color: rgba(1,145,193,0.5); }
     input::placeholder { color: var(--muted); }
-
-    /* Buttons */
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 11px 20px;
-      border-radius: var(--radius-sm);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      border: 1px solid var(--border);
-      background: var(--surface2);
-      color: var(--text);
-      transition: all 0.15s;
-      text-decoration: none;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 11px 20px; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 500; cursor: pointer; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text); transition: all 0.15s;
     }
     .btn:hover { background: #0e2d3d; border-color: rgba(1,145,193,0.3); }
     .btn:active { transform: scale(0.97); }
-    .btn-accent {
-      background: var(--accent);
-      color: #ffffff;
-      border-color: var(--accent);
-      font-weight: 600;
-    }
+    .btn-accent { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
     .btn-accent:hover { background: var(--accent-bright); border-color: var(--accent-bright); }
     .btn-danger { background: transparent; color: var(--danger); border-color: rgba(245,116,116,0.3); }
     .btn-danger:hover { background: rgba(245,116,116,0.08); }
     .btn-block { width: 100%; }
     .btn-sm { padding: 7px 14px; font-size: 13px; }
-
-    /* Letter display */
     .letter-giant {
-      font-family: 'Syne', sans-serif;
-      font-size: 120px;
-      font-weight: 800;
-      line-height: 1;
-      color: var(--accent);
-      text-align: center;
-      letter-spacing: -4px;
+      font-family: 'Syne', sans-serif; font-size: 120px; font-weight: 800; line-height: 1;
+      color: var(--accent); text-align: center; letter-spacing: -4px;
       animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     @keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-    /* Timer */
-    .timer {
-      font-family: 'Syne', sans-serif;
-      font-size: 48px;
-      font-weight: 700;
-      text-align: center;
-      letter-spacing: -1px;
-      color: var(--text);
-      transition: color 0.3s;
-    }
-    .timer.warning { color: var(--danger); }
-
-    /* Players list */
-    .player-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 14px;
-    }
+    .player-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
     .player-item:last-child { border-bottom: none; }
-    .player-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--muted);
-      flex-shrink: 0;
-      margin-right: 10px;
-    }
+    .player-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; margin-right: 10px; }
     .player-dot.ready { background: var(--accent); box-shadow: 0 0 6px rgba(1,145,193,0.6); }
     .player-dot.done { background: var(--accent3); box-shadow: 0 0 6px rgba(77,214,247,0.5); }
     .player-name-row { display: flex; align-items: center; }
-    .player-status { font-size: 12px; color: var(--muted); }
-
-    /* Answer form */
     .answer-grid { display: flex; flex-direction: column; gap: 14px; }
-    .answer-field label {
-      display: block;
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-
-    /* Results */
-    .results-category { margin-bottom: 1.5rem; }
-    .results-cat-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 10px;
-    }
-    .answer-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 12px;
-      background: var(--surface2);
-      border-radius: var(--radius-sm);
-      margin-bottom: 4px;
-      font-size: 14px;
-    }
-    .answer-row.unique { border-left: 2px solid var(--accent); }
-    .answer-row.repeated { border-left: 2px solid var(--accent3); }
-    .answer-row.empty { border-left: 2px solid var(--border); opacity: 0.5; }
-    .answer-row.invalid { border-left: 2px solid var(--danger); background: rgba(245,116,116,0.05); }
-    .answer-pts {
-      font-family: 'Syne', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--accent);
-    }
+    .answer-field label { display: block; font-size: 12px; color: var(--muted); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+    .results-category { margin-bottom: 1rem; }
+    .results-cat-title { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .answer-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--surface2); border-radius: var(--radius-sm); margin-bottom: 4px; font-size: 14px; border-left: 2px solid transparent; }
+    .answer-row.unique { border-left-color: var(--accent); }
+    .answer-row.repeated { border-left-color: var(--accent3); }
+    .answer-row.empty { border-left-color: var(--border); opacity: 0.5; }
+    .answer-row.invalid { border-left-color: var(--danger); background: rgba(245,116,116,0.05); }
+    .answer-pts { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); }
     .answer-pts.pts-20 { color: #f5a623; }
     .answer-pts.pts-5 { color: var(--accent3); }
     .answer-pts.pts-0 { color: var(--muted); }
-
-    /* Ranking */
-    .rank-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-    }
+    .val-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
+    .val-btn:hover { transform: scale(1.1); }
+    .val-btn.valid { background: rgba(77,247,160,0.15); border-color: var(--success); }
+    .val-btn.invalid-sel { background: rgba(245,116,116,0.15); border-color: var(--danger); }
+    .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
     .rank-item:last-child { border-bottom: none; }
-    .rank-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--muted);
-      width: 24px;
-      text-align: center;
-      flex-shrink: 0;
-    }
-    .rank-num.top1 { color: var(--accent); font-size: 18px; }
+    .rank-num { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--muted); width: 24px; text-align: center; flex-shrink: 0; }
+    .rank-num.top1 { font-size: 18px; }
     .rank-name { flex: 1; font-size: 15px; }
-    .rank-score {
-      font-family: 'Syne', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-    }
+    .rank-score { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
     .rank-rounds { font-size: 12px; color: var(--muted); text-align: right; }
-
-    /* Status badge */
-    .badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-    }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
     .badge-waiting { background: rgba(90,143,163,0.15); color: var(--muted); }
     .badge-playing { background: rgba(1,145,193,0.15); color: var(--accent-bright); }
     .badge-done { background: rgba(0,105,140,0.25); color: var(--accent3); }
-
-    /* Round counter */
-    .round-pill {
-      display: inline-block;
-      padding: 4px 14px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
-
-    /* Tabs */
+    .round-pill { display: inline-block; padding: 4px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; font-size: 13px; color: var(--muted); margin-bottom: 1rem; }
     .tabs { display: flex; gap: 4px; margin-bottom: 1.5rem; }
-    .tab {
-      flex: 1;
-      padding: 9px;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 500;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      background: transparent;
-      transition: all 0.15s;
-    }
+    .tab { flex: 1; padding: 9px; text-align: center; font-size: 13px; font-weight: 500; border-radius: var(--radius-sm); cursor: pointer; border: 1px solid var(--border); color: var(--muted); background: transparent; transition: all 0.15s; }
     .tab.active { background: var(--surface2); color: var(--text); border-color: rgba(1,145,193,0.4); }
-
-    /* Controls row */
     .row { display: flex; gap: 8px; }
     .row > * { flex: 1; }
-
-    /* Alert */
-    .alert {
-      padding: 12px 16px;
-      border-radius: var(--radius-sm);
-      font-size: 14px;
-      margin-bottom: 1rem;
-      background: rgba(1,145,193,0.08);
-      border: 1px solid rgba(1,145,193,0.25);
-      color: var(--accent-bright);
-    }
-    .alert.info { background: rgba(77,214,247,0.08); border-color: rgba(77,214,247,0.2); color: var(--accent3); }
-    .alert.danger { background: rgba(245,116,116,0.08); border-color: rgba(245,116,116,0.2); color: var(--danger); }
-
-    /* Waiting animation */
-    .waiting-dots::after {
-      content: '';
-      animation: dots 1.5s infinite;
-    }
-    @keyframes dots {
-      0%   { content: ''; }
-      33%  { content: '.'; }
-      66%  { content: '..'; }
-      100% { content: '...'; }
-    }
-
+    .divider { height: 1px; background: var(--border); margin: 1rem 0; }
+    .chip { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; border: 1px solid var(--border); color: var(--muted); margin: 2px; }
     .hidden { display: none !important; }
-
-    /* Confetti canvas */
-    #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
-
-    /* ---- views ---- */
     .view { animation: fadein 0.2s ease; }
     @keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* Divider */
-    .divider { height: 1px; background: var(--border); margin: 1rem 0; }
-
-    /* Chip */
-    .chip {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      margin: 2px;
-    }
-
-    @media (max-width: 480px) {
-      .letter-giant { font-size: 90px; }
-      .timer { font-size: 38px; }
-      .logo { font-size: 34px; }
-    }
+    .waiting-dots::after { content: ''; animation: dots 1.5s infinite; }
+    @keyframes dots { 0% { content: ''; } 33% { content: '.'; } 66% { content: '..'; } 100% { content: '...'; } }
+    .stopped-banner { text-align: center; padding: 1rem; background: rgba(245,116,116,0.08); border: 1px solid rgba(245,116,116,0.2); border-radius: var(--radius-sm); margin-bottom: 1rem; }
+    .stopped-banner .big { font-size: 28px; font-weight: 700; color: var(--danger); font-family: 'Syne', sans-serif; }
+    #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
+    @media (max-width: 480px) { .letter-giant { font-size: 90px; } .logo { font-size: 34px; } }
   </style>
 </head>
 <body>
 <canvas id="confetti-canvas" class="hidden"></canvas>
-
 <div class="app">
   <div class="header">
     <div class="logo">Tutti<span>Frutti</span></div>
     <div class="logo-sub">Moby Edition</div>
+    <div id="admin-crown" class="admin-crown hidden">👑 Modo Admin</div>
   </div>
 
-  <!-- VIEW: LOGIN -->
+  <!-- LOGIN -->
   <div id="view-login" class="view">
     <div class="card">
       <div class="card-title">¿Cómo te llamás?</div>
@@ -360,101 +137,146 @@
     </div>
     <div class="card" style="opacity:0.7">
       <div class="card-title">Categorías de hoy</div>
-      <div>
-        <span class="chip">Nombre</span>
-        <span class="chip">Objeto</span>
-        <span class="chip">País / Ciudad</span>
-        <span class="chip">Frase "se me hizo tarde porque..."</span>
-        <span class="chip">Un personaje que crearía</span>
-        <span class="chip">Comida</span>
+      <span class="chip">Nombre</span><span class="chip">Objeto</span><span class="chip">País / Ciudad</span>
+      <span class="chip">Frase "se me hizo tarde porque..."</span>
+      <span class="chip">Un personaje que crearía</span><span class="chip">Comida</span>
+    </div>
+    <div style="text-align:center;margin-top:0.5rem">
+      <button class="btn btn-sm" onclick="showView('view-admin-login')">🔐 Soy admin</button>
+    </div>
+  </div>
+
+  <!-- ADMIN LOGIN -->
+  <div id="view-admin-login" class="view hidden">
+    <div class="card">
+      <div class="card-title">Acceso Admin</div>
+      <input type="password" id="input-admin-pass" placeholder="Contraseña..." style="margin-bottom:12px" />
+      <div id="admin-pass-error" class="hidden" style="color:var(--danger);font-size:13px;margin-bottom:10px">Contraseña incorrecta</div>
+      <div class="row">
+        <button class="btn" onclick="showView('view-login')">← Volver</button>
+        <button class="btn btn-accent" onclick="loginAdmin()">Entrar como admin</button>
       </div>
     </div>
   </div>
 
-  <!-- VIEW: LOBBY -->
+  <!-- LOBBY -->
   <div id="view-lobby" class="view hidden">
-    <div id="lobby-alert" class="alert hidden"></div>
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
         <div class="card-title" style="margin:0">Sala de espera</div>
-        <span id="lobby-badge" class="badge badge-waiting">Esperando</span>
+        <span class="badge badge-waiting">Esperando</span>
       </div>
       <div id="players-lobby"></div>
       <div class="divider"></div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:1rem">
-        Cuando todos estén listos, cualquiera puede iniciar la ronda.
+      <div id="admin-start-btn" class="hidden">
+        <button class="btn btn-accent btn-block" onclick="startRound()">⚡ Iniciar ronda <span id="round-num-btn">1</span></button>
       </div>
-      <button class="btn btn-accent btn-block" onclick="startRound()">⚡ Iniciar ronda <span id="round-num-btn">1</span></button>
+      <div id="waiting-start-msg" style="text-align:center;color:var(--muted);font-size:14px;padding:0.5rem 0">
+        Esperando que el admin inicie la ronda<span class="waiting-dots"></span>
+      </div>
     </div>
     <button class="btn btn-danger btn-sm" onclick="leaveGame()">Salir del juego</button>
   </div>
 
-  <!-- VIEW: PLAYING -->
+  <!-- PLAYING -->
   <div id="view-playing" class="view hidden">
     <div style="text-align:center;margin-bottom:0.5rem">
       <span class="round-pill">Ronda <span id="playing-round">1</span></span>
     </div>
+    <div id="stopped-banner-card" class="stopped-banner hidden">
+      <div class="big">⏹ ¡Se paró!</div>
+      <div style="font-size:14px;color:var(--muted);margin-top:4px" id="stopper-name-msg"></div>
+    </div>
     <div class="card" style="text-align:center;padding:1.5rem 1rem">
       <div class="card-title">Letra</div>
       <div class="letter-giant" id="playing-letter">A</div>
-      <div class="timer" id="playing-timer">02:00</div>
     </div>
     <div id="card-my-answers" class="card">
-      <div class="card-title">Tus respuestas — completá todo con letra <span id="cat-letter-hint" style="color:var(--accent)">A</span></div>
+      <div class="card-title">Tus respuestas — letra <span id="cat-letter-hint" style="color:var(--accent)">A</span></div>
       <div class="answer-grid" id="answer-fields"></div>
       <div style="margin-top:1.5rem">
         <button class="btn btn-accent btn-block" id="btn-finish" onclick="finishAnswers()">✓ ¡Listo, terminé!</button>
       </div>
     </div>
     <div id="card-waiting-others" class="card hidden">
-      <div style="text-align:center;padding:1rem 0">
-        <div style="font-size:32px;margin-bottom:0.5rem">⏳</div>
-        <div style="font-size:16px;font-weight:500;margin-bottom:0.5rem">Tus respuestas fueron enviadas</div>
-        <div style="font-size:14px;color:var(--muted)" class="waiting-dots">Esperando a los demás</div>
+      <div style="text-align:center;padding:0.5rem 0 1rem">
+        <div style="font-size:28px;margin-bottom:0.5rem">⏳</div>
+        <div style="font-size:15px;font-weight:500;margin-bottom:4px">Tus respuestas fueron enviadas</div>
+        <div style="font-size:13px;color:var(--muted)" class="waiting-dots">Esperando al admin para validar</div>
       </div>
       <div class="divider"></div>
       <div id="players-waiting"></div>
+      <div id="admin-go-validate" class="hidden" style="margin-top:1rem">
+        <button class="btn btn-accent btn-block" onclick="adminGoValidate()">👑 Ir a validar respuestas →</button>
+      </div>
     </div>
   </div>
 
-  <!-- VIEW: RESULTS -->
+  <!-- WAITING VALIDATION -->
+  <div id="view-waiting-validation" class="view hidden">
+    <div class="card" style="text-align:center;padding:2.5rem 1rem">
+      <div style="font-size:48px;margin-bottom:1rem">⚖️</div>
+      <div style="font-size:18px;font-weight:600;margin-bottom:8px">El admin está validando</div>
+      <div style="font-size:14px;color:var(--muted)" class="waiting-dots">Ya casi aparecen los resultados</div>
+    </div>
+  </div>
+
+  <!-- VALIDATION (admin only) -->
+  <div id="view-validation" class="view hidden">
+    <div style="text-align:center;margin-bottom:1rem">
+      <span class="round-pill">Ronda <span id="val-round">1</span> — Letra <span id="val-letter" style="color:var(--accent);font-weight:700">A</span></span>
+    </div>
+    <div class="card">
+      <div class="card-title">👑 Validación de respuestas</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:1.2rem">Tildá ✅ o ❌ cada respuesta. Las inválidas valen 0 puntos.</div>
+      <div id="validation-body"></div>
+      <div style="margin-top:1.5rem">
+        <button class="btn btn-accent btn-block" onclick="confirmValidation()">Confirmar y ver resultados →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
   <div id="view-results" class="view hidden">
     <div style="display:flex;gap:8px;margin-bottom:1rem">
       <button class="tab active" id="tab-results" onclick="showTab('results')">Resultados</button>
       <button class="tab" id="tab-ranking" onclick="showTab('ranking')">Ranking</button>
     </div>
-
     <div id="panel-results">
       <div class="round-pill">Ronda <span id="results-round">1</span> — Letra <span id="results-letter" style="color:var(--accent);font-weight:700">A</span></div>
       <div id="results-categories"></div>
-      <div class="row" style="margin-top:1rem">
-        <button class="btn btn-accent" onclick="startRound()">Nueva ronda →</button>
-        <button class="btn" onclick="showTab('ranking')">Ver ranking</button>
+      <div id="admin-next-btn" class="hidden" style="margin-top:1rem">
+        <div class="row">
+          <button class="btn btn-accent" onclick="nextRound()">Nueva ronda →</button>
+          <button class="btn" onclick="showTab('ranking')">Ver ranking</button>
+        </div>
+        <div style="margin-top:8px">
+          <button class="btn btn-danger btn-sm btn-block" onclick="resetGame()">Resetear juego</button>
+        </div>
+      </div>
+      <div id="player-next-msg" class="hidden" style="margin-top:1rem;text-align:center;color:var(--muted);font-size:14px;padding:1rem">
+        Esperando que el admin inicie la próxima ronda<span class="waiting-dots"></span>
       </div>
     </div>
-
     <div id="panel-ranking" class="hidden">
       <div class="card">
         <div class="card-title">Ranking general</div>
         <div id="ranking-list"></div>
       </div>
-      <div class="row" style="margin-top:1rem">
-        <button class="btn btn-accent" onclick="startRound()">Nueva ronda →</button>
-        <button class="btn btn-danger btn-sm" onclick="resetGame()">Resetear juego</button>
+      <div id="admin-ranking-btn" class="hidden" style="margin-top:1rem">
+        <div class="row">
+          <button class="btn btn-accent" onclick="nextRound()">Nueva ronda →</button>
+          <button class="btn btn-danger btn-sm" onclick="resetGame()">Resetear</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import {
-    getDatabase, ref, set, get, onValue, update, push, remove, serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, set, get, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // ── CONFIGURACIÓN FIREBASE ──────────────────────────────────────────────────
-  // Reemplazá estos valores con los de tu proyecto Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyBrlaf_WzgvIV8tIhBLrVNHq4GnivnLIrI",
     authDomain: "tutti-frutti-moby.firebaseapp.com",
@@ -464,160 +286,154 @@
     messagingSenderId: "159085782721",
     appId: "1:159085782721:web:49feca29fc031aabd21640"
   };
-  // ────────────────────────────────────────────────────────────────────────────
+
+  const ADMIN_PASS = "Moby26";
+  const CATEGORIES = [
+    { id: "nombre",    label: "Nombre",                             placeholder: "Nombre que empiece con..." },
+    { id: "objeto",    label: "Objeto",                             placeholder: "Objeto que empiece con..." },
+    { id: "pais",      label: "País / Ciudad",                      placeholder: "País o ciudad que empiece con..." },
+    { id: "frase",     label: 'Frase "se me hizo tarde porque..."', placeholder: "Un verbo que empiece con..." },
+    { id: "personaje", label: "Un personaje que crearía",           placeholder: "Nombre del personaje..." },
+    { id: "comida",    label: "Comida",                             placeholder: "Comida que empiece con..." },
+  ];
+  const LETTERS = "ABCDEFGHIJLMNOPRSTV".split("");
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  const CATEGORIES = [
-    { id: "nombre",     label: "Nombre",                           placeholder: "Nombre que empiece con..." },
-    { id: "objeto",     label: "Objeto",                           placeholder: "Objeto que empiece con..." },
-    { id: "pais",       label: "País / Ciudad",                    placeholder: "País o ciudad que empiece con..." },
-    { id: "frase",      label: 'Frase "se me hizo tarde porque..."', placeholder: "Completá la frase..." },
-    { id: "personaje",  label: "Un personaje que crearía",         placeholder: "Nombre del personaje..." },
-    { id: "comida",     label: "Comida",                           placeholder: "Comida que empiece con..." },
-  ];
-
-  const LETTERS = "ABCDEFGHIJLMNOPRSTV".split("");
-
   let myName = localStorage.getItem("tf_name") || "";
-  let myId   = localStorage.getItem("tf_id")   || generateId();
+  let myId   = localStorage.getItem("tf_id")   || genId();
+  let isAdmin = false;
+  let gameState = null;
+  let unsubGame = null;
+  let localValidation = {};
+
   localStorage.setItem("tf_id", myId);
 
-  let gameState = null;
-  let timerInterval = null;
-  let timerEndAt = null;
-  let unsubGame = null;
+  function genId() { return Math.random().toString(36).slice(2, 10); }
+  function pickLetter() { return LETTERS[Math.floor(Math.random() * LETTERS.length)]; }
 
-  // ── UTILS ───────────────────────────────────────────────────────────────────
-  function generateId() {
-    return Math.random().toString(36).slice(2, 10);
-  }
-
-  function showView(id) {
-    ["view-login","view-lobby","view-playing","view-results"].forEach(v => {
-      document.getElementById(v).classList.add("hidden");
-    });
+  // ── VIEWS ────────────────────────────────────────────────────────────────────
+  window.showView = function(id) {
+    ["view-login","view-admin-login","view-lobby","view-playing",
+     "view-validation","view-waiting-validation","view-results"].forEach(v =>
+      document.getElementById(v).classList.add("hidden"));
     document.getElementById(id).classList.remove("hidden");
-  }
+  };
 
-  function pickLetter() {
-    return LETTERS[Math.floor(Math.random() * LETTERS.length)];
-  }
+  // ── ADMIN ────────────────────────────────────────────────────────────────────
+  window.loginAdmin = function() {
+    const pass = document.getElementById("input-admin-pass").value;
+    if (pass === ADMIN_PASS) {
+      isAdmin = true;
+      document.getElementById("admin-crown").classList.remove("hidden");
+      document.getElementById("input-admin-pass").value = "";
+      document.getElementById("admin-pass-error").classList.add("hidden");
+      if (myName) { registerAndSubscribe(); }
+      else { showView("view-login"); }
+    } else {
+      document.getElementById("admin-pass-error").classList.remove("hidden");
+    }
+  };
 
-  // ── JOIN ────────────────────────────────────────────────────────────────────
+  // ── JOIN ─────────────────────────────────────────────────────────────────────
   window.joinGame = async function() {
     const nameEl = document.getElementById("input-name");
     const name = nameEl.value.trim();
     if (!name) { nameEl.focus(); return; }
     myName = name;
     localStorage.setItem("tf_name", name);
-
-    await set(ref(db, `players/${myId}`), {
-      name, id: myId, status: "lobby", score: 0, joinedAt: Date.now()
-    });
-
-    showView("view-lobby");
-    subscribeGame();
+    registerAndSubscribe();
   };
 
-  // ── LEAVE ───────────────────────────────────────────────────────────────────
+  async function registerAndSubscribe() {
+    await set(ref(db, "players/" + myId), {
+      name: myName, id: myId, status: "lobby", score: 0, joinedAt: Date.now(), isAdmin: isAdmin
+    });
+    subscribeGame();
+  }
+
   window.leaveGame = async function() {
-    await remove(ref(db, `players/${myId}`));
+    await remove(ref(db, "players/" + myId));
     localStorage.removeItem("tf_name");
-    localStorage.removeItem("tf_id");
-    myId = generateId();
+    myId = genId();
     localStorage.setItem("tf_id", myId);
+    isAdmin = false;
+    document.getElementById("admin-crown").classList.add("hidden");
     if (unsubGame) unsubGame();
     showView("view-login");
   };
 
-  // ── SUBSCRIBE ───────────────────────────────────────────────────────────────
+  // ── SUBSCRIBE ────────────────────────────────────────────────────────────────
   function subscribeGame() {
     if (unsubGame) unsubGame();
-    const gameRef = ref(db, "/");
-    unsubGame = onValue(gameRef, snap => {
-      const data = snap.val() || {};
-      gameState = data;
-      renderUI(data);
+    unsubGame = onValue(ref(db, "/"), snap => {
+      gameState = snap.val() || {};
+      renderUI(gameState);
     });
   }
 
-  // ── RENDER UI ───────────────────────────────────────────────────────────────
+  // ── RENDER ───────────────────────────────────────────────────────────────────
   function renderUI(data) {
-    const game   = data.game   || {};
+    const game = data.game || {};
     const players = data.players || {};
-    const phase  = game.phase  || "lobby";
-
-    // Make sure I'm still in players
+    const phase = game.phase || "lobby";
     if (!players[myId] && myName) {
-      // re-register silently
-      set(ref(db, `players/${myId}`), {
-        name: myName, id: myId, status: phase === "lobby" ? "lobby" : "playing", score: 0, joinedAt: Date.now()
-      });
+      set(ref(db, "players/" + myId), { name: myName, id: myId, status: phase, score: 0, joinedAt: Date.now(), isAdmin: isAdmin });
     }
-
-    if (phase === "lobby") {
-      showView("view-lobby");
-      renderLobby(players, game);
-    } else if (phase === "playing") {
-      showView("view-playing");
-      renderPlaying(game, players);
-    } else if (phase === "results") {
-      showView("view-results");
-      renderResults(game, players);
+    if (phase === "lobby") { showView("view-lobby"); renderLobby(players, game); }
+    else if (phase === "playing") { showView("view-playing"); renderPlaying(game, players); }
+    else if (phase === "validation") {
+      if (isAdmin) { showView("view-validation"); renderValidation(game, players); }
+      else { showView("view-waiting-validation"); }
     }
+    else if (phase === "results") { showView("view-results"); renderResults(game, players); }
   }
 
-  // ── LOBBY ───────────────────────────────────────────────────────────────────
+  // ── LOBBY ────────────────────────────────────────────────────────────────────
   function renderLobby(players, game) {
     const round = (game.round || 0) + 1;
     document.getElementById("round-num-btn").textContent = round;
-
-    const list = document.getElementById("players-lobby");
+    document.getElementById("admin-start-btn").classList.toggle("hidden", !isAdmin);
+    document.getElementById("waiting-start-msg").classList.toggle("hidden", isAdmin);
     const sorted = Object.values(players).sort((a,b) => a.joinedAt - b.joinedAt);
-    list.innerHTML = sorted.map(p => `
+    document.getElementById("players-lobby").innerHTML = sorted.map(p => `
       <div class="player-item">
         <div class="player-name-row">
           <div class="player-dot ready"></div>
-          <span style="font-size:15px">${p.name}${p.id === myId ? ' <span style="color:var(--muted);font-size:12px">(vos)</span>' : ''}</span>
+          <span>${p.name}${p.id === myId ? ' <span style="color:var(--muted);font-size:12px">(vos)</span>' : ''}${p.isAdmin ? ' 👑' : ''}</span>
         </div>
         <span style="font-size:13px;color:var(--muted)">${p.score || 0} pts</span>
-      </div>
-    `).join("") || '<div style="color:var(--muted);font-size:14px">Nadie más todavía...</div>';
+      </div>`).join("") || '<div style="color:var(--muted);font-size:14px">Nadie más todavía...</div>';
   }
 
-  // ── START ROUND ─────────────────────────────────────────────────────────────
+  // ── START ROUND ──────────────────────────────────────────────────────────────
   window.startRound = async function() {
+    if (!isAdmin) return;
     const data = gameState || {};
     const players = data.players || {};
     const game = data.game || {};
     const round = (game.round || 0) + 1;
     const letter = pickLetter();
-    const duration = 120; // seconds
-    const endAt = Date.now() + duration * 1000;
-
-    // Reset players answers for this round
     const updates = {};
     Object.keys(players).forEach(pid => {
-      updates[`players/${pid}/status`] = "playing";
-      updates[`players/${pid}/answers`] = null;
-      updates[`players/${pid}/finished`] = false;
+      updates["players/" + pid + "/status"] = "playing";
+      updates["players/" + pid + "/answers"] = null;
+      updates["players/" + pid + "/finished"] = false;
     });
     updates["game/phase"] = "playing";
     updates["game/round"] = round;
     updates["game/letter"] = letter;
-    updates["game/endAt"] = endAt;
-    updates["answers"] = null;
-
+    updates["game/stoppedBy"] = null;
+    updates["game/catScores"] = null;
     await update(ref(db), updates);
   };
 
-  // ── PLAYING ─────────────────────────────────────────────────────────────────
+  // ── PLAYING ──────────────────────────────────────────────────────────────────
   function renderPlaying(game, players) {
     const letter = game.letter || "?";
-    const round  = game.round  || 1;
-    const endAt  = game.endAt  || (Date.now() + 120000);
+    const round = game.round || 1;
+    const stoppedBy = game.stoppedBy || null;
     const myPlayer = players[myId] || {};
     const finished = myPlayer.finished || false;
 
@@ -625,305 +441,208 @@
     document.getElementById("playing-letter").textContent = letter;
     document.getElementById("cat-letter-hint").textContent = letter;
 
-    // Timer
-    clearInterval(timerInterval);
-    timerInterval = setInterval(async () => {
-      const left = Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
-      const m = Math.floor(left / 60);
-      const s = left % 60;
-      const el = document.getElementById("playing-timer");
-      if (el) {
-        el.textContent = `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
-        el.className = "timer" + (left <= 15 ? " warning" : "");
-      }
-      if (left <= 0) {
-        clearInterval(timerInterval);
-        const snap = await get(ref(db, "/"));
-        const freshData = snap.val() || {};
-        const freshGame = freshData.game || {};
-        if (freshGame.phase !== "results") {
-          const me = (freshData.players || {})[myId] || {};
-          if (!me.finished) await autoFinish();
-          setTimeout(async () => {
-            const snap2 = await get(ref(db, "/"));
-            const d2 = snap2.val() || {};
-            if ((d2.game || {}).phase !== "results") {
-              await computeAndShowResults(d2.game || {}, d2.players || {});
-            }
-          }, 1500);
-        }
-      }
-    }, 500);
+    // Stopped banner
+    const banner = document.getElementById("stopped-banner-card");
+    if (stoppedBy) {
+      const stopperName = (players[stoppedBy] || {}).name || "Alguien";
+      banner.classList.remove("hidden");
+      document.getElementById("stopper-name-msg").textContent = stopperName + " terminó primero — completá tus respuestas";
+    } else {
+      banner.classList.add("hidden");
+    }
 
-    // Show/hide forms
     if (finished) {
       document.getElementById("card-my-answers").classList.add("hidden");
       document.getElementById("card-waiting-others").classList.remove("hidden");
-      renderWaiting(players);
+      renderWaiting(players, stoppedBy);
     } else {
       document.getElementById("card-my-answers").classList.remove("hidden");
       document.getElementById("card-waiting-others").classList.add("hidden");
       renderAnswerFields(letter);
     }
-
-    // Check if all finished → go to results
-    const playerValues = Object.values(players);
-    const allFinished = playerValues.length > 0 && playerValues.every(p => p.finished);
-    if (allFinished) {
-      clearInterval(timerInterval);
-      computeAndShowResults(game, players);
-    }
   }
 
   function renderAnswerFields(letter) {
     const container = document.getElementById("answer-fields");
-    if (container.dataset.letter === letter) return; // already rendered
+    if (container.dataset.letter === letter) return;
     container.dataset.letter = letter;
     container.innerHTML = CATEGORIES.map(cat => `
       <div class="answer-field">
         <label>${cat.label}</label>
         <input type="text" id="ans-${cat.id}" placeholder="${cat.placeholder}" maxlength="60" autocomplete="off" />
-      </div>
-    `).join("");
+      </div>`).join("");
   }
 
-  function renderWaiting(players) {
-    const list = document.getElementById("players-waiting");
+  function renderWaiting(players, stoppedBy) {
     const sorted = Object.values(players).sort((a,b) => a.joinedAt - b.joinedAt);
-    list.innerHTML = sorted.map(p => `
+    document.getElementById("players-waiting").innerHTML = sorted.map(p => `
       <div class="player-item">
         <div class="player-name-row">
           <div class="player-dot ${p.finished ? 'done' : ''}"></div>
-          <span style="font-size:14px">${p.name}</span>
+          <span style="font-size:14px">${p.name}${p.id === stoppedBy ? ' 🏁' : ''}</span>
         </div>
-        <span class="badge ${p.finished ? 'badge-done' : 'badge-playing'}">${p.finished ? 'Listo ✓' : 'Jugando...'}</span>
-      </div>
-    `).join("");
+        <span class="badge ${p.finished ? 'badge-done' : 'badge-playing'}">${p.finished ? 'Listo ✓' : 'Completando...'}</span>
+      </div>`).join("");
+    document.getElementById("admin-go-validate").classList.toggle("hidden", !isAdmin);
   }
 
-  async function autoFinish() {
-    const answers = {};
-    CATEGORIES.forEach(cat => { answers[cat.id] = ""; });
-    await saveAnswers(answers);
-  }
-
-  window.finishAnswers = async function() {
-    const answers = {};
-    CATEGORIES.forEach(cat => {
-      const el = document.getElementById("ans-"+cat.id);
-      const val = el ? el.value.trim() : "";
-      // Mínimo 3 caracteres para contar como respuesta válida
-      answers[cat.id] = val.length >= 3 ? val : "";
-    });
-    await saveAnswers(answers);
+  window.adminGoValidate = async function() {
+    await update(ref(db), { "game/phase": "validation" });
   };
 
-  async function saveAnswers(answers) {
-    await update(ref(db, `players/${myId}`), { answers, finished: true });
-  }
-
-  // ── AI VALIDATION ───────────────────────────────────────────────────────────
-  async function validateAnswersWithAI(letter, answersMap) {
-    // answersMap: { catId: [{ playerId, ans }] }
-    // Returns: { catId: { playerId: true/false } }
-    const items = [];
-    Object.entries(answersMap).forEach(([catId, list]) => {
-      list.forEach(({ playerId, ans }) => {
-        if (ans) items.push({ catId, playerId, ans });
-      });
-    });
-    if (items.length === 0) return {};
-
-    const catDescriptions = {
-      nombre: "nombre propio de persona (solo una palabra)",
-      objeto: "objeto tangible del mundo real (solo una palabra)",
-      pais: "país o ciudad geográficamente existente (solo una palabra)",
-      frase: "un verbo en infinitivo o conjugado (una sola palabra, para completar la frase 'se me hizo tarde porque...')",
-      personaje: "nombre de un personaje ficticio que alguien crearía (puede ser inventado, solo una palabra o nombre propio)",
-      comida: "comida o bebida real (solo una palabra)"
-    };
-
-    const letra = letter.toUpperCase();
-    const itemsStr = items.map((it, i) => '{"id": "' + i + '", "categoria": "' + (catDescriptions[it.catId] || it.catId) + '", "respuesta": "' + it.ans.replace(/"/g, '') + '"}').join('\n');
-    const prompt = "Sos un arbitro de Tutti Frutti. La letra de la ronda es " + letra + ".\n" +
-      "Valida cada respuesta segun estas reglas:\n" +
-      "- Debe empezar con la letra " + letra + "\n" +
-      "- Debe corresponder a la categoria indicada\n" +
-      "- Debe ser una sola palabra (nombre propio compuesto como Nueva York se acepta para Pais/Ciudad)\n" +
-      "- No puede ser spam, letras repetidas o palabras sin sentido (excepto personaje que crearia que puede ser inventado)\n\n" +
-      "Responde SOLO con JSON valido, sin texto extra ni markdown:\n" +
-      '{"results": [{"id": "0", "valid": true}, {"id": "1", "valid": false}]}' + "\n\n" +
-      "Items a validar:\n" + itemsStr;
-
-    try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [{ role: "user", content: prompt }]
-        })
-      });
-      const data = await response.json();
-      const text = (data.content || []).map(c => c.text || "").join("").trim();
-      const clean = text.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(clean);
-      const validMap = {};
-      parsed.results.forEach((r, i) => {
-        const it = items[parseInt(r.id)];
-        if (it) {
-          if (!validMap[it.catId]) validMap[it.catId] = {};
-          validMap[it.catId][it.playerId] = r.valid;
-        }
-      });
-      return validMap;
-    } catch (e) {
-      console.error("AI validation error:", e);
-      // Si falla la IA, todo válido (fallback)
-      const validMap = {};
-      items.forEach(it => {
-        if (!validMap[it.catId]) validMap[it.catId] = {};
-        validMap[it.catId][it.playerId] = true;
-      });
-      return validMap;
-    }
-  }
-
-  // ── RESULTS ─────────────────────────────────────────────────────────────────
-  async function computeAndShowResults(game, players) {
-    const letter = (game.letter || "").toLowerCase();
-    const playerList = Object.values(players);
-
-    // Build answers map for AI validation
-    const answersMap = {};
+  window.finishAnswers = async function() {
+    const data = gameState || {};
+    const game = data.game || {};
+    const stoppedBy = game.stoppedBy;
+    const answers = {};
     CATEGORIES.forEach(cat => {
-      answersMap[cat.id] = playerList
-        .map(p => ({ playerId: p.id, ans: ((p.answers && p.answers[cat.id]) || "").trim() }))
-        .filter(x => x.ans);
+      const el = document.getElementById("ans-" + cat.id);
+      const val = el ? el.value.trim() : "";
+      answers[cat.id] = val.length >= 2 ? val : "";
     });
+    const updates = {};
+    updates["players/" + myId + "/answers"] = answers;
+    updates["players/" + myId + "/finished"] = true;
+    if (!stoppedBy) updates["game/stoppedBy"] = myId;
+    await update(ref(db), updates);
+  };
 
-    // Run AI validation
-    const validMap = await validateAnswersWithAI(letter, answersMap);
+  // ── VALIDATION ───────────────────────────────────────────────────────────────
+  function renderValidation(game, players) {
+    const letter = game.letter || "?";
+    const round = game.round || 1;
+    document.getElementById("val-round").textContent = round;
+    document.getElementById("val-letter").textContent = letter;
+    const playerList = Object.values(players).sort((a,b) => a.joinedAt - b.joinedAt);
 
-    // Calculate scores per category
-    const catScores = {};
+    // Init validation: auto-valid if starts with letter, else invalid
     CATEGORIES.forEach(cat => {
-      const answers = {};
       playerList.forEach(p => {
         const ans = ((p.answers && p.answers[cat.id]) || "").trim();
-        const key = ans.toLowerCase();
-        if (!answers[key]) answers[key] = [];
-        answers[key].push(p.id);
+        const key = cat.id + "_" + p.id;
+        if (!(key in localValidation)) {
+          localValidation[key] = ans ? ans.toLowerCase().startsWith(letter.toLowerCase()) : false;
+        }
       });
+    });
 
+    let html = "";
+    CATEGORIES.forEach(cat => {
+      html += '<div class="results-category"><div class="results-cat-title">' + cat.label + '</div>';
+      playerList.forEach(p => {
+        const ans = ((p.answers && p.answers[cat.id]) || "").trim();
+        const key = cat.id + "_" + p.id;
+        const isValid = localValidation[key];
+        html += '<div class="answer-row" id="row-' + key + '">' +
+          '<div style="flex:1">' +
+          '<span style="font-size:12px;color:var(--muted);margin-right:8px">' + p.name + '</span>' +
+          '<span style="font-size:14px">' + (ans || '<span style="color:var(--muted)">sin respuesta</span>') + '</span>' +
+          '</div>';
+        if (ans) {
+          html += '<div style="display:flex;gap:6px">' +
+            '<button class="val-btn ' + (isValid ? 'valid' : '') + '" onclick="setVal(\'' + key + '\', true)">✅</button>' +
+            '<button class="val-btn ' + (!isValid ? 'invalid-sel' : '') + '" onclick="setVal(\'' + key + '\', false)">❌</button>' +
+            '</div>';
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+    });
+    document.getElementById("validation-body").innerHTML = html;
+  }
+
+  window.setVal = function(key, valid) {
+    localValidation[key] = valid;
+    const row = document.getElementById("row-" + key);
+    if (!row) return;
+    const btns = row.querySelectorAll(".val-btn");
+    if (btns[0]) btns[0].className = "val-btn" + (valid ? " valid" : "");
+    if (btns[1]) btns[1].className = "val-btn" + (!valid ? " invalid-sel" : "");
+  };
+
+  window.confirmValidation = async function() {
+    const data = gameState || {};
+    const game = data.game || {};
+    const players = data.players || {};
+    const playerList = Object.values(players);
+
+    const catScores = {};
+    CATEGORIES.forEach(cat => {
+      const answerCounts = {};
+      playerList.forEach(p => {
+        const ans = ((p.answers && p.answers[cat.id]) || "").trim();
+        const key = cat.id + "_" + p.id;
+        if (ans && localValidation[key]) {
+          const k = ans.toLowerCase();
+          answerCounts[k] = (answerCounts[k] || 0) + 1;
+        }
+      });
+      const totalValid = Object.keys(answerCounts).length;
       catScores[cat.id] = {};
       playerList.forEach(p => {
         const ans = ((p.answers && p.answers[cat.id]) || "").trim();
-        if (!ans) {
-          catScores[cat.id][p.id] = { ans: "", pts: 0, invalid: false };
-          return;
-        }
-        const startsOk = ans.toLowerCase().startsWith(letter);
-        const aiValid = (validMap[cat.id] && validMap[cat.id][p.id] !== undefined)
-          ? validMap[cat.id][p.id] : true;
-
-        if (!startsOk || !aiValid) {
-          catScores[cat.id][p.id] = { ans, pts: 0, invalid: true };
-          return;
-        }
-        const key = ans.toLowerCase();
-        const count = answers[key].length;
-        const totalAnswered = Object.keys(answers).filter(k => k !== "").length;
-        let pts;
-        if (totalAnswered === 1) {
-          pts = 20;
-        } else if (count === 1) {
-          pts = 10;
-        } else {
-          pts = 5;
-        }
+        const key = cat.id + "_" + p.id;
+        const markedValid = localValidation[key] === true;
+        if (!ans) { catScores[cat.id][p.id] = { ans: "", pts: 0, invalid: false }; return; }
+        if (!markedValid) { catScores[cat.id][p.id] = { ans, pts: 0, invalid: true }; return; }
+        const count = answerCounts[ans.toLowerCase()] || 1;
+        const pts = totalValid === 1 ? 20 : count === 1 ? 10 : 5;
         catScores[cat.id][p.id] = { ans, pts, invalid: false };
       });
     });
 
-    // Update totals
     const updates = {};
     playerList.forEach(p => {
       let roundPts = 0;
-      CATEGORIES.forEach(cat => {
-        roundPts += (catScores[cat.id][p.id] || { pts: 0 }).pts;
-      });
-      updates[`players/${p.id}/score`] = (p.score || 0) + roundPts;
-      updates[`players/${p.id}/lastRoundPts`] = roundPts;
+      CATEGORIES.forEach(cat => { roundPts += (catScores[cat.id][p.id] || { pts: 0 }).pts; });
+      updates["players/" + p.id + "/score"] = (p.score || 0) + roundPts;
+      updates["players/" + p.id + "/lastRoundPts"] = roundPts;
     });
     updates["game/phase"] = "results";
     updates["game/catScores"] = catScores;
+    await update(ref(db), updates);
+    localValidation = {};
+  };
 
-    // Only the first player to detect all-done writes this
-    const snap = await get(ref(db, "game/phase"));
-    if (snap.val() !== "results") {
-      await update(ref(db), updates);
-    }
-  }
-
+  // ── RESULTS ──────────────────────────────────────────────────────────────────
   function renderResults(game, players) {
-    clearInterval(timerInterval);
-    const letter  = game.letter || "?";
-    const round   = game.round  || 1;
+    const letter = game.letter || "?";
+    const round = game.round || 1;
     const catScores = game.catScores || {};
     const playerList = Object.values(players).sort((a,b) => (b.score||0) - (a.score||0));
 
     document.getElementById("results-round").textContent = round;
     document.getElementById("results-letter").textContent = letter;
+    document.getElementById("admin-next-btn").classList.toggle("hidden", !isAdmin);
+    document.getElementById("admin-ranking-btn").classList.toggle("hidden", !isAdmin);
+    document.getElementById("player-next-msg").classList.toggle("hidden", isAdmin);
 
-    // Results by category
-    const container = document.getElementById("results-categories");
-    container.innerHTML = CATEGORIES.map(cat => {
+    document.getElementById("results-categories").innerHTML = CATEGORIES.map(cat => {
       const rows = playerList.map(p => {
         const info = (catScores[cat.id] && catScores[cat.id][p.id]) || { ans: "", pts: 0, invalid: false };
         const isInvalid = info.invalid && info.ans;
-        const type = !info.ans ? "empty" : isInvalid ? "invalid" : info.pts === 20 ? "unique" : info.pts === 10 ? "unique" : info.pts === 5 ? "repeated" : "empty";
-        const ptsClass = isInvalid ? "pts-0" : info.pts === 20 ? "pts-20" : info.pts === 10 ? "" : info.pts === 5 ? "pts-5" : "pts-0";
-        return `
-          <div class="answer-row ${type}">
-            <div>
-              <span style="font-size:12px;color:var(--muted);margin-right:8px">${p.name}</span>
-              <span style="font-size:14px;${isInvalid ? 'text-decoration:line-through;color:var(--danger)' : ''}">${info.ans || '—'}</span>
-              ${isInvalid ? '<span style="font-size:11px;color:var(--danger);margin-left:6px">❌ inválida</span>' : ''}
-            </div>
-            <span class="answer-pts ${ptsClass}">${info.pts > 0 ? '+'+info.pts : '0'}</span>
-          </div>
-        `;
+        const type = !info.ans ? "empty" : isInvalid ? "invalid" : info.pts >= 10 ? "unique" : info.pts === 5 ? "repeated" : "empty";
+        const ptsClass = info.pts === 20 ? "pts-20" : info.pts === 10 ? "" : info.pts === 5 ? "pts-5" : "pts-0";
+        return '<div class="answer-row ' + type + '">' +
+          '<div><span style="font-size:12px;color:var(--muted);margin-right:8px">' + p.name + '</span>' +
+          '<span style="font-size:14px;' + (isInvalid ? 'text-decoration:line-through;color:var(--danger)' : '') + '">' + (info.ans || '—') + '</span>' +
+          (isInvalid ? '<span style="font-size:11px;color:var(--danger);margin-left:6px">❌</span>' : '') + '</div>' +
+          '<span class="answer-pts ' + ptsClass + '">' + (info.pts > 0 ? '+' + info.pts : '0') + '</span></div>';
       }).join("");
-      return `
-        <div class="results-category card">
-          <div class="results-cat-title">${cat.label}</div>
-          ${rows}
-        </div>
-      `;
+      return '<div class="results-category card"><div class="results-cat-title">' + cat.label + '</div>' + rows + '</div>';
     }).join("");
 
-    // Ranking
-    const rankList = document.getElementById("ranking-list");
-    rankList.innerHTML = playerList.map((p, i) => `
-      <div class="rank-item">
-        <div class="rank-num ${i === 0 ? 'top1' : ''}">${i === 0 ? '🏆' : i+1}</div>
-        <div class="rank-name">
-          ${p.name}${p.id === myId ? ' <span style="color:var(--muted);font-size:12px">(vos)</span>' : ''}
-        </div>
-        <div>
-          <div class="rank-score">${p.score || 0}</div>
-          <div class="rank-rounds">+${p.lastRoundPts || 0} esta ronda</div>
-        </div>
-      </div>
-    `).join("");
+    document.getElementById("ranking-list").innerHTML = playerList.map((p, i) =>
+      '<div class="rank-item">' +
+      '<div class="rank-num ' + (i===0?'top1':'') + '">' + (i===0?'🏆':i+1) + '</div>' +
+      '<div class="rank-name">' + p.name + (p.id===myId?' <span style="color:var(--muted);font-size:12px">(vos)</span>':'') + '</div>' +
+      '<div><div class="rank-score">' + (p.score||0) + '</div>' +
+      '<div class="rank-rounds">+' + (p.lastRoundPts||0) + ' esta ronda</div></div></div>'
+    ).join("");
 
-    // Confetti for winner
     if (playerList[0] && playerList[0].id === myId) launchConfetti();
   }
 
-  // ── TABS ─────────────────────────────────────────────────────────────────────
   window.showTab = function(tab) {
     document.getElementById("panel-results").classList.toggle("hidden", tab !== "results");
     document.getElementById("panel-ranking").classList.toggle("hidden", tab !== "ranking");
@@ -931,65 +650,62 @@
     document.getElementById("tab-ranking").classList.toggle("active", tab === "ranking");
   };
 
-  // ── RESET ────────────────────────────────────────────────────────────────────
-  window.resetGame = async function() {
-    if (!confirm("¿Resetear todos los puntajes?")) return;
-    const data = gameState || {};
-    const players = data.players || {};
+  window.nextRound = async function() {
+    if (!isAdmin) return;
+    const players = (gameState || {}).players || {};
     const updates = {};
     Object.keys(players).forEach(pid => {
-      updates[`players/${pid}/score`] = 0;
-      updates[`players/${pid}/lastRoundPts`] = 0;
+      updates["players/" + pid + "/status"] = "lobby";
+      updates["players/" + pid + "/answers"] = null;
+      updates["players/" + pid + "/finished"] = false;
     });
     updates["game/phase"] = "lobby";
-    updates["game/round"] = 0;
-    updates["answers"] = null;
+    updates["game/stoppedBy"] = null;
+    updates["game/catScores"] = null;
     await update(ref(db), updates);
   };
 
-  // ── CONFETTI ─────────────────────────────────────────────────────────────────
+  window.resetGame = async function() {
+    if (!isAdmin) return;
+    if (!confirm("Resetear todos los puntajes?")) return;
+    const players = (gameState || {}).players || {};
+    const updates = {};
+    Object.keys(players).forEach(pid => {
+      updates["players/" + pid + "/score"] = 0;
+      updates["players/" + pid + "/lastRoundPts"] = 0;
+      updates["players/" + pid + "/answers"] = null;
+      updates["players/" + pid + "/finished"] = false;
+    });
+    updates["game/phase"] = "lobby";
+    updates["game/round"] = 0;
+    updates["game/stoppedBy"] = null;
+    updates["game/catScores"] = null;
+    await update(ref(db), updates);
+    localValidation = {};
+  };
+
   function launchConfetti() {
     const canvas = document.getElementById("confetti-canvas");
     canvas.classList.remove("hidden");
     const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
     const pieces = Array.from({length: 120}, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * -canvas.height,
-      r: Math.random() * 6 + 4,
-      c: ["#0191C1","#01b8f5","#4dd6f7","#00698C","#ffffff"][Math.floor(Math.random()*5)],
-      vy: Math.random() * 3 + 2,
-      vx: (Math.random() - 0.5) * 2,
-      rot: Math.random() * 360,
-      vr: (Math.random() - 0.5) * 5
+      x: Math.random()*canvas.width, y: Math.random()*-canvas.height,
+      r: Math.random()*6+4, c: ["#0191C1","#01b8f5","#4dd6f7","#00698C","#ffffff"][Math.floor(Math.random()*5)],
+      vy: Math.random()*3+2, vx: (Math.random()-0.5)*2, rot: Math.random()*360, vr: (Math.random()-0.5)*5
     }));
     let frame = 0;
     function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      pieces.forEach(p => {
-        p.y += p.vy; p.x += p.vx; p.rot += p.vr;
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rot * Math.PI / 180);
-        ctx.fillStyle = p.c;
-        ctx.fillRect(-p.r, -p.r/2, p.r*2, p.r);
-        ctx.restore();
-      });
-      frame++;
-      if (frame < 200) requestAnimationFrame(draw);
-      else canvas.classList.add("hidden");
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(p => { p.y+=p.vy; p.x+=p.vx; p.rot+=p.vr; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180); ctx.fillStyle=p.c; ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r); ctx.restore(); });
+      if (++frame < 200) requestAnimationFrame(draw); else canvas.classList.add("hidden");
     }
     draw();
   }
 
-  // ── INIT ─────────────────────────────────────────────────────────────────────
-  if (myName) {
-    document.getElementById("input-name").value = myName;
-  }
-  document.getElementById("input-name").addEventListener("keydown", e => {
-    if (e.key === "Enter") window.joinGame();
-  });
+  if (myName) document.getElementById("input-name").value = myName;
+  document.getElementById("input-name").addEventListener("keydown", e => { if (e.key==="Enter") window.joinGame(); });
+  document.getElementById("input-admin-pass").addEventListener("keydown", e => { if (e.key==="Enter") window.loginAdmin(); });
 </script>
 </body>
 </html>
