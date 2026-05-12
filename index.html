@@ -384,7 +384,7 @@
     if (phase === "lobby") { showView("view-lobby"); renderLobby(players, game); }
     else if (phase === "playing") { showView("view-playing"); renderPlaying(game, players); }
     else if (phase === "validation") {
-      if (isAdmin) { showView("view-validation"); renderValidation(game, players); }
+      if (isAdmin) { showView("view-validation"); renderValidation(game, players).catch(console.error); }
       else { showView("view-waiting-validation"); }
     }
     else if (phase === "results") { showView("view-results"); renderResults(game, players); }
@@ -446,9 +446,28 @@
     if (stoppedBy) {
       const stopperName = (players[stoppedBy] || {}).name || "Alguien";
       banner.classList.remove("hidden");
-      document.getElementById("stopper-name-msg").textContent = stopperName + " terminó primero — completá tus respuestas";
+      document.getElementById("stopper-name-msg").textContent = stopperName + " terminó primero";
     } else {
       banner.classList.add("hidden");
+    }
+
+    // If stopped and not yet finished → save empty answers and show waiting screen
+    if (stoppedBy && !finished) {
+      // Auto-submit whatever they have written
+      const answers = {};
+      CATEGORIES.forEach(cat => {
+        const el = document.getElementById("ans-" + cat.id);
+        const val = el ? el.value.trim() : "";
+        answers[cat.id] = val.length >= 2 ? val : "";
+      });
+      update(ref(db), {
+        ["players/" + myId + "/answers"]: answers,
+        ["players/" + myId + "/finished"]: true
+      });
+      document.getElementById("card-my-answers").classList.add("hidden");
+      document.getElementById("card-waiting-others").classList.remove("hidden");
+      renderWaiting(players, stoppedBy);
+      return;
     }
 
     if (finished) {
@@ -495,11 +514,25 @@
     const game = data.game || {};
     const stoppedBy = game.stoppedBy;
     const answers = {};
+    let allFilled = true;
     CATEGORIES.forEach(cat => {
       const el = document.getElementById("ans-" + cat.id);
       const val = el ? el.value.trim() : "";
-      answers[cat.id] = val.length >= 2 ? val : "";
+      answers[cat.id] = val;
+      if (val.length < 2) {
+        allFilled = false;
+        if (el) { el.style.borderColor = "rgba(245,116,116,0.8)"; el.placeholder = "Campo obligatorio!"; }
+      } else {
+        if (el) el.style.borderColor = "";
+      }
     });
+    if (!allFilled) {
+      const btn = document.getElementById("btn-finish");
+      btn.textContent = "Completá todos los campos!";
+      btn.style.background = "var(--danger)";
+      setTimeout(() => { btn.textContent = "✓ ¡Listo, terminé!"; btn.style.background = ""; }, 2000);
+      return;
+    }
     const updates = {};
     updates["players/" + myId + "/answers"] = answers;
     updates["players/" + myId + "/finished"] = true;
@@ -507,24 +540,95 @@
     await update(ref(db), updates);
   };
 
+  // ── NORMALIZE (ignore accents) ───────────────────────────────────────────────
+  function normalize(str) {
+    return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  }
+
+  // ── AI PRE-VALIDATION ────────────────────────────────────────────────────────
+  async function aiPreValidate(letter, players) {
+    const items = [];
+    const catDescriptions = {
+      nombre: "nombre propio de persona",
+      objeto: "objeto tangible del mundo real",
+      pais: "pais o ciudad geograficamente existente",
+      frase: "verbo en infinitivo o conjugado",
+      personaje: "nombre de un personaje ficticio (puede ser inventado)",
+      comida: "comida o bebida real"
+    };
+    CATEGORIES.forEach(cat => {
+      Object.values(players).forEach(p => {
+        const ans = ((p.answers && p.answers[cat.id]) || "").trim();
+        if (ans) items.push({ catId: cat.id, playerId: p.id, ans });
+      });
+    });
+    if (items.length === 0) return {};
+    const itemsStr = items.map((it, i) =>
+      '{"id":"' + i + '","cat":"' + (catDescriptions[it.catId]||it.catId) + '","resp":"' + it.ans.replace(/"/g,'') + '"}'
+    ).join("\n");
+    const prompt = "Sos arbitro de Tutti Frutti. Letra: " + letter.toUpperCase() + ".\n" +
+      "Para cada respuesta indica si es valida segun su categoria.\n" +
+      "Reglas: debe empezar con esa letra (ignorando tildes), ser una sola palabra y corresponder a la categoria.\n" +
+      'Responde SOLO JSON sin markdown: {"results":[{"id":"0","valid":true},...]}' +
+      "\nItems:\n" + itemsStr;
+    try {
+      const resp = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 800, messages: [{ role: "user", content: prompt }] })
+      });
+      const data = await resp.json();
+      const text = (data.content||[]).map(c=>c.text||"").join("").replace(/```json|```/g,"").trim();
+      const parsed = JSON.parse(text);
+      const result = {};
+      parsed.results.forEach(r => {
+        const it = items[parseInt(r.id)];
+        if (it) {
+          if (!result[it.catId]) result[it.catId] = {};
+          result[it.catId][it.playerId] = r.valid;
+        }
+      });
+      return result;
+    } catch(e) {
+      const result = {};
+      items.forEach(it => {
+        if (!result[it.catId]) result[it.catId] = {};
+        result[it.catId][it.playerId] = normalize(it.ans).startsWith(normalize(letter));
+      });
+      return result;
+    }
+  }
+
   // ── VALIDATION ───────────────────────────────────────────────────────────────
-  function renderValidation(game, players) {
+  async function renderValidation(game, players) {
     const letter = game.letter || "?";
     const round = game.round || 1;
     document.getElementById("val-round").textContent = round;
     document.getElementById("val-letter").textContent = letter;
     const playerList = Object.values(players).sort((a,b) => a.joinedAt - b.joinedAt);
 
-    // Init validation: auto-valid if starts with letter, else invalid
-    CATEGORIES.forEach(cat => {
-      playerList.forEach(p => {
-        const ans = ((p.answers && p.answers[cat.id]) || "").trim();
-        const key = cat.id + "_" + p.id;
-        if (!(key in localValidation)) {
-          localValidation[key] = ans ? ans.toLowerCase().startsWith(letter.toLowerCase()) : false;
-        }
+    // Show loading
+    document.getElementById("validation-body").innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)"><div style="font-size:28px;margin-bottom:8px">🤖</div>La IA está pre-validando<span class="waiting-dots"></span></div>';
+
+    // AI suggestions only on first render
+    if (Object.keys(localValidation).length === 0) {
+      const aiResult = await aiPreValidate(letter, players);
+      CATEGORIES.forEach(cat => {
+        playerList.forEach(p => {
+          const ans = ((p.answers && p.answers[cat.id]) || "").trim();
+          const key = cat.id + "_" + p.id;
+          if (ans) {
+            const aiSays = (aiResult[cat.id] && aiResult[cat.id][p.id] !== undefined)
+              ? aiResult[cat.id][p.id]
+              : normalize(ans).startsWith(normalize(letter));
+            localValidation[key] = aiSays;
+            localValidation[key + "_ai"] = aiSays;
+          } else {
+            localValidation[key] = false;
+          }
+        });
       });
-    });
+    }
 
     let html = "";
     CATEGORIES.forEach(cat => {
@@ -533,15 +637,22 @@
         const ans = ((p.answers && p.answers[cat.id]) || "").trim();
         const key = cat.id + "_" + p.id;
         const isValid = localValidation[key];
+        const aiSays = localValidation[key + "_ai"];
+        const aiTag = aiSays === true
+          ? '<span style="font-size:10px;background:rgba(77,214,247,0.15);color:var(--accent3);border-radius:4px;padding:1px 6px;margin-left:6px">IA ✅</span>'
+          : aiSays === false
+          ? '<span style="font-size:10px;background:rgba(245,116,116,0.12);color:var(--danger);border-radius:4px;padding:1px 6px;margin-left:6px">IA ❌</span>'
+          : '';
         html += '<div class="answer-row" id="row-' + key + '">' +
-          '<div style="flex:1">' +
-          '<span style="font-size:12px;color:var(--muted);margin-right:8px">' + p.name + '</span>' +
-          '<span style="font-size:14px">' + (ans || '<span style="color:var(--muted)">sin respuesta</span>') + '</span>' +
+          '<div style="flex:1;display:flex;align-items:center;flex-wrap:wrap;gap:2px">' +
+          '<span style="font-size:12px;color:var(--muted)">' + p.name + '</span>' +
+          '<span style="font-size:14px;margin-left:6px">' + (ans || '<span style="color:var(--muted)">sin respuesta</span>') + '</span>' +
+          (ans ? aiTag : '') +
           '</div>';
         if (ans) {
-          html += '<div style="display:flex;gap:6px">' +
-            '<button class="val-btn ' + (isValid ? 'valid' : '') + '" onclick="setVal(\'' + key + '\', true)">✅</button>' +
-            '<button class="val-btn ' + (!isValid ? 'invalid-sel' : '') + '" onclick="setVal(\'' + key + '\', false)">❌</button>' +
+          html += '<div style="display:flex;gap:6px;flex-shrink:0">' +
+            '<button class="val-btn ' + (isValid ? 'valid' : '') + '" onclick="setVal('' + key + '', true)">✅</button>' +
+            '<button class="val-btn ' + (!isValid ? 'invalid-sel' : '') + '" onclick="setVal('' + key + '', false)">❌</button>' +
             '</div>';
         }
         html += '</div>';
@@ -550,7 +661,6 @@
     });
     document.getElementById("validation-body").innerHTML = html;
   }
-
   window.setVal = function(key, valid) {
     localValidation[key] = valid;
     const row = document.getElementById("row-" + key);
@@ -573,7 +683,7 @@
         const ans = ((p.answers && p.answers[cat.id]) || "").trim();
         const key = cat.id + "_" + p.id;
         if (ans && localValidation[key]) {
-          const k = ans.toLowerCase();
+          const k = normalize(ans);
           answerCounts[k] = (answerCounts[k] || 0) + 1;
         }
       });
@@ -585,7 +695,7 @@
         const markedValid = localValidation[key] === true;
         if (!ans) { catScores[cat.id][p.id] = { ans: "", pts: 0, invalid: false }; return; }
         if (!markedValid) { catScores[cat.id][p.id] = { ans, pts: 0, invalid: true }; return; }
-        const count = answerCounts[ans.toLowerCase()] || 1;
+        const count = answerCounts[normalize(ans)] || 1;
         const pts = totalValid === 1 ? 20 : count === 1 ? 10 : 5;
         catScores[cat.id][p.id] = { ans, pts, invalid: false };
       });
