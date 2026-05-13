@@ -599,7 +599,16 @@
     }
   }
 
-  // ── VALIDATION ───────────────────────────────────────────────────────────────
+  function makeValButtons(key, isValid) {
+    var v1 = isValid ? ' valid' : '';
+    var v2 = !isValid ? ' invalid-sel' : '';
+    return '<div style="display:flex;gap:6px;flex-shrink:0">' +
+      '<button class="val-btn' + v1 + '" onclick="setVal(\'' + key + '\',true)">\u2705</button>' +
+      '<button class="val-btn' + v2 + '" onclick="setVal(\'' + key + '\',false)">\u274c</button>' +
+      '</div>';
+  }
+
+    // ── VALIDATION ───────────────────────────────────────────────────────────────
   async function renderValidation(game, players) {
     const letter = game.letter || "?";
     const round = game.round || 1;
@@ -639,9 +648,9 @@
         const isValid = localValidation[key];
         const aiSays = localValidation[key + "_ai"];
         const aiTag = aiSays === true
-          ? '<span style="font-size:10px;background:rgba(77,214,247,0.15);color:var(--accent3);border-radius:4px;padding:1px 6px;margin-left:6px">IA ✅</span>'
+          ? '<span style="font-size:10px;background:rgba(77,214,247,0.15);color:var(--accent3);border-radius:4px;padding:1px 6px;margin-left:6px">IA ok</span>'
           : aiSays === false
-          ? '<span style="font-size:10px;background:rgba(245,116,116,0.12);color:var(--danger);border-radius:4px;padding:1px 6px;margin-left:6px">IA ❌</span>'
+          ? '<span style="font-size:10px;background:rgba(245,116,116,0.12);color:var(--danger);border-radius:4px;padding:1px 6px;margin-left:6px">IA inv</span>'
           : '';
         html += '<div class="answer-row" id="row-' + key + '">' +
           '<div style="flex:1;display:flex;align-items:center;flex-wrap:wrap;gap:2px">' +
@@ -650,10 +659,7 @@
           (ans ? aiTag : '') +
           '</div>';
         if (ans) {
-          html += '<div style="display:flex;gap:6px;flex-shrink:0">' +
-            '<button class="val-btn ' + (isValid ? 'valid' : '') + '" onclick="setVal('' + key + '', true)">✅</button>' +
-            '<button class="val-btn ' + (!isValid ? 'invalid-sel' : '') + '" onclick="setVal('' + key + '', false)">❌</button>' +
-            '</div>';
+          html += makeValButtons(key, isValid);
         }
         html += '</div>';
       });
