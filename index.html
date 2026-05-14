@@ -566,16 +566,28 @@
     const itemsStr = items.map((it, i) =>
       '{"id":"' + i + '","cat":"' + (catDescriptions[it.catId]||it.catId) + '","resp":"' + it.ans.replace(/"/g,'') + '"}'
     ).join("\n");
-    const prompt = "Sos arbitro de Tutti Frutti. Letra: " + letter.toUpperCase() + ".\n" +
-      "Para cada respuesta indica si es valida segun su categoria.\n" +
-      "Reglas: debe empezar con esa letra (ignorando tildes), ser una sola palabra y corresponder a la categoria.\n" +
-      'Responde SOLO JSON sin markdown: {"results":[{"id":"0","valid":true},...]}' +
+    const prompt = "Sos árbitro estricto de Tutti Frutti. La letra de esta ronda es: " + letter.toUpperCase() + ".\n\n" +
+      "Para cada respuesta evaluá DOS cosas:\n" +
+      "1. ¿Empieza con la letra " + letter.toUpperCase() + "? (ignorá tildes y mayúsculas, por ejemplo Á = A)\n" +
+      "2. ¿Corresponde EXACTAMENTE a su categoría?\n\n" +
+      "Ejemplos de respuestas INVÁLIDAS:\n" +
+      "- 'Manzana' en categoría 'país o ciudad' → invalid (es una fruta, no un lugar geográfico)\n" +
+      "- 'Francia' en categoría 'comida' → invalid (es un país, no comida)\n" +
+      "- 'Pedro' en categoría 'objeto tangible' → invalid (es un nombre, no un objeto)\n" +
+      "- 'Correr' en categoría 'nombre propio de persona' → invalid (es un verbo)\n\n" +
+      "Sé muy estricto: si la respuesta no es claramente de esa categoría, marcala como inválida.\n" +
+      'Respondé SOLO JSON sin markdown: {"results":[{"id":"0","valid":true},...]}' +
       "\nItems:\n" + itemsStr;
     try {
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 800, messages: [{ role: "user", content: prompt }] })
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": "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",
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        },
+        body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: 800, messages: [{ role: "user", content: prompt }] })
       });
       const data = await resp.json();
       const text = (data.content||[]).map(c=>c.text||"").join("").replace(/```json|```/g,"").trim();
@@ -693,7 +705,7 @@
           answerCounts[k] = (answerCounts[k] || 0) + 1;
         }
       });
-      const totalValid = Object.keys(answerCounts).length;
+      const totalAnswered = Object.values(answerCounts).reduce((a, b) => a + b, 0);
       catScores[cat.id] = {};
       playerList.forEach(p => {
         const ans = ((p.answers && p.answers[cat.id]) || "").trim();
@@ -702,7 +714,7 @@
         if (!ans) { catScores[cat.id][p.id] = { ans: "", pts: 0, invalid: false }; return; }
         if (!markedValid) { catScores[cat.id][p.id] = { ans, pts: 0, invalid: true }; return; }
         const count = answerCounts[normalize(ans)] || 1;
-        const pts = totalValid === 1 ? 20 : count === 1 ? 10 : 5;
+        const pts = totalAnswered === 1 ? 20 : count === 1 ? 10 : 5;
         catScores[cat.id][p.id] = { ans, pts, invalid: false };
       });
     });
